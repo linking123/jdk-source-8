@@ -538,12 +538,13 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     private static final float LOAD_FACTOR = 0.75f;
 
     /**
-     * The bin count threshold for using a tree rather than list for a
+     * The bin count threshold（门槛） for using a tree rather than *list* for a
      * bin.  Bins are converted to trees when adding an element to a
      * bin with at least this many nodes. The value must be greater
      * than 2, and should be at least 8 to mesh with assumptions in
      * tree removal about conversion back to plain bins upon
      * shrinkage.
+     * list -> 红黑树的转化门槛
      */
     static final int TREEIFY_THRESHOLD = 8;
 
@@ -555,7 +556,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     static final int UNTREEIFY_THRESHOLD = 6;
 
     /**
-     * The smallest table capacity for which bins may be treeified.
+     * The smallest table capacity for which bins may be treeified（树化）.
      * (Otherwise the table is resized if too many nodes in a bin.)
      * The value should be at least 4 * TREEIFY_THRESHOLD to avoid
      * conflicts between resizing and treeification thresholds.
@@ -619,7 +620,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     static class Node<K,V> implements Map.Entry<K,V> {
         final int hash;
         final K key;
-        volatile V val;
+        volatile V val;  //volatile 保证可见性
         volatile Node<K,V> next;
 
         Node(int hash, K key, V val, Node<K,V> next) {
@@ -1014,11 +1015,11 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         for (Node<K,V>[] tab = table;;) {
             Node<K,V> f; int n, i, fh;
             if (tab == null || (n = tab.length) == 0)
-                tab = initTable();
+                tab = initTable(); //第一次put时初始化node数组
             else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
                 if (casTabAt(tab, i, null,
                              new Node<K,V>(hash, key, value, null)))
-                    break;                   // no lock when adding to empty bin
+                    break;                   // no lock when adding to empty bin //无锁操作
             }
             else if ((fh = f.hash) == MOVED)
                 tab = helpTransfer(tab, f);
@@ -1366,6 +1367,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
     /**
      * Stripped-down version of helper class used in previous version,
      * declared for the sake of serialization compatibility
+     * 分段
      */
     static class Segment<K,V> extends ReentrantLock implements Serializable {
         private static final long serialVersionUID = 2249069246763182397L;
@@ -2224,7 +2226,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
         Node<K,V>[] tab; int sc;
         while ((tab = table) == null || tab.length == 0) {
             if ((sc = sizeCtl) < 0)
-                Thread.yield(); // lost initialization race; just spin
+                Thread.yield(); // lost initialization race; just spin（自旋）
             else if (U.compareAndSwapInt(this, SIZECTL, sc, -1)) {
                 try {
                     if ((tab = table) == null || tab.length == 0) {

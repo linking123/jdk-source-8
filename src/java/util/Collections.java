@@ -2524,6 +2524,7 @@ public class Collections {
      * It is imperative that the user manually synchronize on the returned
      * map when iterating over any of its collection views:
      * <pre>
+     *  //低并发线程安全的 HashMap
      *  Map m = Collections.synchronizedMap(new HashMap());
      *      ...
      *  Set s = m.keySet();  // Needn't be in synchronized block

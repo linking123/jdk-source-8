@@ -189,6 +189,11 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
             UNSAFE.putObject(this, itemOffset, item);
         }
 
+        /**
+         * @param cmp 期望值
+         * @param val 目标值
+         * @return
+         */
         boolean casItem(E cmp, E val) {
             return UNSAFE.compareAndSwapObject(this, itemOffset, cmp, val);
         }
@@ -317,6 +322,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
     }
 
     /**
+     * 向队列中添加元素
      * Inserts the specified element at the tail of this queue.
      * As the queue is unbounded, this method will never return {@code false}.
      *
@@ -346,6 +352,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
                 // will also be off-list, in which case we need to
                 // jump to head, from which all live nodes are always
                 // reachable.  Else the new tail is a better bet.
+                // != 非原子操作，t!=t 多线程环境下可能为true
                 p = (t != (t = tail)) ? t : head;
             else
                 // Check for tail updates after two hops.
