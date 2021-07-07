@@ -440,6 +440,7 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * queues such as DelayQueues for which poll() is allowed to
      * return null even if it may later return non-null when delays
      * expire.
+     * 任务队列。被提交但尚未被执行的任务
      */
     private final BlockingQueue<Runnable> workQueue;
 
@@ -513,10 +514,12 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     private volatile RejectedExecutionHandler handler;
 
     /**
-     * Timeout in nanoseconds for idle threads waiting for work.
+     * Timeout in nanoseconds for idle(空闲) threads waiting for work.
      * Threads use this timeout when there are more than corePoolSize
      * present or if allowCoreThreadTimeOut. Otherwise they wait
      * forever for new work.
+     * pool中thread数量超过corePoolSize时，多余的空闲threads的存活时间
+     * 超过corePoolSize的idle threads，多长时间内会被kill
      */
     private volatile long keepAliveTime;
 
@@ -531,12 +534,14 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
      * Core pool size is the minimum number of workers to keep alive
      * (and not allow to time out etc) unless allowCoreThreadTimeOut
      * is set, in which case the minimum is zero.
+     * 核心线程数。pool中的thread最小数量
      */
     private volatile int corePoolSize;
 
     /**
      * Maximum pool size. Note that the actual maximum is internally
      * bounded by CAPACITY.
+     * 最大线程数
      */
     private volatile int maximumPoolSize;
 
