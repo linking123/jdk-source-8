@@ -7,10 +7,6 @@
 # Usage
 
 - 1.As dev env
-
-- todo, write a doc
-
-
 - 2.As study resource
 
 
